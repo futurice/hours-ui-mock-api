@@ -14,16 +14,21 @@ const baseUrl = apiUrl + apiVersion
 func Router() *httprouter.Router {
 	router := httprouter.New()
 
+	router.GET(baseUrl+"/user/", userGET)
 	router.GET(baseUrl+"/hours/", hoursGET)
-	router.POST(baseUrl+"/hours/", hoursPOST)
-	router.PUT(baseUrl+"/hours/", hoursPOST)
-	router.DELETE(baseUrl+"/hours/", hoursPOST)
-
-	//router.GET(baseUrl+"/projects/", projects)
-	//router.GET(baseUrl+"/holidays/", holidays)
-	//router.GET(baseUrl+"/users/", users)
 
 	return router
+}
+
+func userGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	log.Printf("GET\t%v", r.URL)
+	response := MockUserResponse()
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Panic(err)
+	}
 }
 
 func hoursGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -60,19 +65,3 @@ func hoursPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		log.Panic(err)
 	}
 }
-
-//func projects(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-//	fmt.Fprint(w, "Welcome!\n")
-//}
-//
-//func holidays(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-//	fmt.Fprint(w, "Welcome!\n")
-//}
-//
-//func users(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-//	fmt.Fprint(w, "Welcome!\n")
-//}
-
-//func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-//	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
-//}
