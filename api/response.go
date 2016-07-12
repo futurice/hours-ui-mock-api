@@ -4,144 +4,105 @@ import (
 	"time"
 )
 
-type Meta struct {
-	Limit      int    `json:"limit"`
-	Next       string `json:"next"`
-	Offset     int    `json:"offset"`
-	Previous   string `json:"previous"`
-	TotalCount int    `json:"total_count"`
+type ErrorResponse struct {
+	Status     int    `json:"status"`
+	StatusText string `json:"statusText"`
 }
 
 type HoursResponse struct {
-	Meta    Meta   `json:"meta"`
-	Objects []Hour `json:"objects"`
+	Projects []Project        `json:"projects"`
+	Months   map[string]Month `json:"months"`
 }
 
-type Hour struct {
-	Absence     bool    `json:"absence"`
-	Billable    bool    `json:"billable"`
-	Day         string  `json:"day"`
+type Month struct {
+	Hours           float64        `json:"hours"`
+	UtilizationRate float64        `json:"utilizationRate"`
+	Days            map[string]Day `json:"days"`
+}
+
+type Day struct {
+	HolidayName     string  `json:"holidayName,omitempty"`
+	Hours           float64 `json:"hours"`
+	UtilizationRate float64 `json:"utilizationRate"`
+	Entries         []Entry `json:"entries"`
+}
+
+type Entry struct {
+	ID          int     `json:"id"`
+	ProjectID   int     `json:"projectID"`
+	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
+	Editable    bool    `json:"editable"`
+}
+
+type Project struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Active bool   `json:"active"`
+	Tasks  []Task `json:"tasks"`
+}
+
+type Task struct {
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	LatestMarking string `json:"latestMarking"`
 }
 
 func MockHoursResponse(startDate, endDate string) (HoursResponse, error) {
-	timeFormat := "2006-01-02"
-	start, err := time.Parse(timeFormat, startDate)
+	dateFormat := "2006-01-02"
+	monthFormat := "2006-01"
+	start, err := time.Parse(dateFormat, startDate)
 	if err != nil {
 		return HoursResponse{}, err
 	}
-	end, err := time.Parse(timeFormat, endDate)
+	end, err := time.Parse(dateFormat, endDate)
 	if err != nil {
 		return HoursResponse{}, err
 	}
 
 	duration := int(end.Sub(start).Hours()/24) + 1
 
-	objects := make([]Hour, duration)
+	months := make(map[string]Month)
 
 	for i := 0; i < duration; i++ {
-		date := end.AddDate(0, 0, -i).Format(timeFormat)
-		objects[i] = Hour{
-			false,
-			false,
-			date,
-			"Description",
-			7.5,
+		day := start.AddDate(0, 0, i)
+
+		month, ok := months[day.Format(monthFormat)]
+
+		if ok == false {
+			months[day.Format(monthFormat)] = Month{
+				Hours:           RoundToHalf(RandomFloat64(0, 150)),
+				UtilizationRate: RandomFloat64(0, 100),
+				Days:            make(map[string]Day),
+			}
+			month = months[day.Format(monthFormat)]
 		}
+		month.Days[day.Format(dateFormat)] = days[i%len(days)]
 	}
 
 	response := HoursResponse{
-		Meta{300, "", 0, "", duration},
-		objects,
+		Projects: projects,
+		Months:   months,
 	}
 
 	return response, nil
 }
 
 type UserResponse struct {
-	FirstName       string    `json:"firstName"`
-	LastName        string    `json:"lastName"`
-	Balance         float64   `json:"balance"`
-	HolidaysLeft    int       `json:"holidaysLeft"`
-	UtilizationRate float64   `json:"utilizationRate"`
-	Projects        []Project `json:"projects"`
-}
-
-type Project struct {
-	ID int `json:"id"`
-	Name string `json:"name"`
-	Active bool `json:"active"`
-	Tasks []Task `json:"tasks"`
-}
-
-type Task struct {
-	ID int `json:"id"`
-	Name string `json:"name"`
-	LatestMarking string `json:"latestMarking"`
+	FirstName       string  `json:"firstName"`
+	LastName        string  `json:"lastName"`
+	Balance         float64 `json:"balance"`
+	HolidaysLeft    int     `json:"holidaysLeft"`
+	UtilizationRate float64 `json:"utilizationRate"`
 }
 
 func MockUserResponse() UserResponse {
-	balance := RoundToHalf(RandomFloat64(-10, 40));
-	holidaysLeft := int(RandomFloat64(0, 24));
-	utilizationRate := RandomFloat64(0, 100);
-
-	projects := []Project{
-		Project{
-			1,
-			"Interal work",
-			true,
-			[]Task{
-				Task{
-					11,
-					"Things",
-					"Doing things",
-				},
-				Task{
-					12,
-					"Stuff",
-					"Doing stuff",
-				},
-			},
-		},
-		Project{
-			2,
-			"Actual customer work",
-			true,
-			[]Task{
-				Task{
-					13,
-					"Development",
-					"Developing",
-				},
-				Task{
-					14,
-					"On-Call",
-					"Long weekend :(",
-				},
-			},
-		},
-		Project{
-			3,
-			"Not active project",
-			false,
-			[]Task{
-				Task{
-					15,
-					"Work",
-					"Doing work",
-				},
-			},
-		},
-	}
-
 	return UserResponse{
-		"Test",
-		"User",
-		balance,
-		holidaysLeft,
-		utilizationRate,
-		projects,
-
+		FirstName:       "Test",
+		LastName:        "User",
+		Balance:         RoundToHalf(RandomFloat64(-10, 40)),
+		HolidaysLeft:    int(RandomFloat64(0, 24)),
+		UtilizationRate: RandomFloat64(0, 100),
 	}
 }
