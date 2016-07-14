@@ -97,6 +97,7 @@ type UserResponse struct {
 	Balance         float64 `json:"balance"`
 	HolidaysLeft    int     `json:"holidaysLeft"`
 	UtilizationRate float64 `json:"utilizationRate"`
+	ProfilePicture  string  `json:"profilePicture"`
 }
 
 func MockUserResponse() UserResponse {
@@ -106,6 +107,7 @@ func MockUserResponse() UserResponse {
 		Balance:         RoundToHalf(RandomFloat64(-10, 40)),
 		HolidaysLeft:    int(RandomFloat64(0, 24)),
 		UtilizationRate: RandomFloat64(0, 100),
+		ProfilePicture:  "https://raw.githubusercontent.com/futurice/spiceprogram/gh-pages/assets/img/logo/chilicorn_no_text-128.png",
 	}
 }
 
