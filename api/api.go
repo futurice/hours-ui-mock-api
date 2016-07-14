@@ -5,6 +5,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"time"
 )
 
 const apiUrl = "/api"
@@ -89,6 +90,9 @@ func hoursDelete(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func sendOK(response interface{}, w http.ResponseWriter) {
+	duration := int(RandomFloat64(1000, 3000))
+	time.Sleep(time.Millisecond * time.Duration(duration))
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -97,6 +101,9 @@ func sendOK(response interface{}, w http.ResponseWriter) {
 }
 
 func sendError(err error, w http.ResponseWriter) {
+	duration := int(RandomFloat64(1000, 3000))
+	time.Sleep(time.Millisecond * time.Duration(duration))
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	log.Println(err)
 	w.WriteHeader(http.StatusInternalServerError)
