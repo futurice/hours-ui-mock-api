@@ -31,7 +31,9 @@ type Day struct {
 type Entry struct {
 	ID          int     `json:"id"`
 	ProjectID   int     `json:"projectID"`
+	ProjectName string  `json:"projectName"`
 	TaskID      int     `json:"taskID"`
+	TaskName    string  `json:"taskName"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
 	Editable    bool    `json:"editable"`
