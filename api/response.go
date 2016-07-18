@@ -11,8 +11,9 @@ type ErrorResponse struct {
 }
 
 type HoursResponse struct {
-	Projects []Project        `json:"projects"`
-	Months   map[string]Month `json:"months"`
+	Projects         []Project        `json:"projects"`
+	Months           map[string]Month `json:"months"`
+	DefaultWorkHours float64          `json:"defaultWorkHours"`
 }
 
 type Month struct {
@@ -86,8 +87,9 @@ func MockHoursResponse(startDate, endDate string) (HoursResponse, error) {
 	}
 
 	response := HoursResponse{
-		Projects: projects,
-		Months:   months,
+		Projects:         projects,
+		Months:           months,
+		DefaultWorkHours: 7.5,
 	}
 
 	return response, nil
@@ -164,8 +166,9 @@ func MockHoursPOSTResponse(request HoursUpdateRequest) (HoursUpdateResponse, err
 			UtilizationRate: RandomFloat64(0, 100),
 		},
 		Hours: HoursResponse{
-			Projects: projects,
-			Months:   months,
+			Projects:         projects,
+			Months:           months,
+			DefaultWorkHours: 7.5,
 		},
 	}
 
