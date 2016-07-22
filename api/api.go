@@ -90,7 +90,7 @@ func hoursDelete(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func sendOK(response interface{}, w http.ResponseWriter) {
-	duration := int(RandomFloat64(1000, 3000))
+	duration := int(RandomFloat64(500, 1000))
 	time.Sleep(time.Millisecond * time.Duration(duration))
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -101,7 +101,7 @@ func sendOK(response interface{}, w http.ResponseWriter) {
 }
 
 func sendError(err error, w http.ResponseWriter) {
-	duration := int(RandomFloat64(1000, 3000))
+	duration := int(RandomFloat64(500, 1000))
 	time.Sleep(time.Millisecond * time.Duration(duration))
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

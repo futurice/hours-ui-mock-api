@@ -32,9 +32,7 @@ type Day struct {
 type Entry struct {
 	ID          int     `json:"id"`
 	ProjectID   int     `json:"projectID"`
-	ProjectName string  `json:"projectName"`
 	TaskID      int     `json:"taskID"`
-	TaskName    string  `json:"taskName"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
 	Editable    bool    `json:"editable"`
@@ -119,7 +117,7 @@ type HoursUpdateRequest struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
-	Day         string  `json:"day"`
+	Date        string  `json:"date"`
 	Hours       float64 `json:"hours"`
 }
 
@@ -130,20 +128,20 @@ type HoursUpdateResponse struct {
 
 func MockHoursPOSTResponse(request HoursUpdateRequest) (HoursUpdateResponse, error) {
 	ShuffleProjects(projects)
-	day, err := time.Parse(DATE_FORMAT, request.Day)
+	date, err := time.Parse(DATE_FORMAT, request.Date)
 	if err != nil {
 		return HoursUpdateResponse{}, err
 	}
 
 	months := make(map[string]Month)
 
-	months[day.Format(MONTH_FORMAT)] = Month{
+	months[date.Format(MONTH_FORMAT)] = Month{
 		Hours:           RoundToHalf(RandomFloat64(0, 150)),
 		UtilizationRate: RandomFloat64(0, 100),
 		Days:            make(map[string]Day),
 	}
 
-	months[day.Format(MONTH_FORMAT)].Days[day.Format(DATE_FORMAT)] = Day{
+	months[date.Format(MONTH_FORMAT)].Days[date.Format(DATE_FORMAT)] = Day{
 		Hours:           request.Hours,
 		UtilizationRate: 100.0,
 		Entries: []Entry{
@@ -164,6 +162,7 @@ func MockHoursPOSTResponse(request HoursUpdateRequest) (HoursUpdateResponse, err
 			Balance:         RoundToHalf(RandomFloat64(-10, 40)),
 			HolidaysLeft:    int(RandomFloat64(0, 24)),
 			UtilizationRate: RandomFloat64(0, 100),
+			ProfilePicture:  "https://raw.githubusercontent.com/futurice/spiceprogram/gh-pages/assets/img/logo/chilicorn_no_text-128.png",
 		},
 		Hours: HoursResponse{
 			Projects:         projects,
@@ -196,7 +195,7 @@ func MockHoursPUTResponse(id string, request HoursUpdateRequest) (HoursUpdateRes
 
 func MockHoursDeleteResponse() (HoursUpdateResponse, error) {
 	response, err := MockHoursPOSTResponse(HoursUpdateRequest{
-		Day:         time.Now().Format(DATE_FORMAT),
+		Date:        time.Now().Format(DATE_FORMAT),
 		ProjectID:   1,
 		TaskID:      1,
 		Description: "test",

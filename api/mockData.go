@@ -82,16 +82,14 @@ var projects = []Project{
 var days = []Day{
 	Day{
 		UtilizationRate: 0.0,
-		Hours:           7.5,
+		Hours:           5,
 		Entries: []Entry{
 			Entry{
 				ID:          1,
 				ProjectID:   internalProject.ID,
-				ProjectName: internalProject.Name,
 				TaskID:      internalProject.Tasks[0].ID,
-				TaskName:    internalProject.Tasks[0].Name,
 				Description: "Internal work",
-				Hours:       7.5,
+				Hours:       5,
 				Editable:    true,
 			},
 		},
@@ -100,12 +98,10 @@ var days = []Day{
 		UtilizationRate: 0.0,
 		Hours:           0.0,
 		HolidayName:     "Public holiday",
-		Entries:         []Entry{},
 	},
 	Day{
 		UtilizationRate: 0.0,
 		Hours:           0.0,
-		Entries:         []Entry{},
 	},
 	Day{
 		UtilizationRate: 0.0,
@@ -114,9 +110,7 @@ var days = []Day{
 			Entry{
 				ID:          2,
 				ProjectID:   absenceProject.ID,
-				ProjectName: absenceProject.Name,
 				TaskID:      absenceProject.Tasks[0].ID,
-				TaskName:    absenceProject.Tasks[0].Name,
 				Description: absenceProject.Tasks[0].LatestMarking,
 				Hours:       7.5,
 				Editable:    true,
@@ -130,9 +124,7 @@ var days = []Day{
 			Entry{
 				ID:          3,
 				ProjectID:   absenceProject.ID,
-				ProjectName: absenceProject.Name,
 				TaskID:      absenceProject.Tasks[0].ID,
-				TaskName:    absenceProject.Tasks[0].Name,
 				Description: absenceProject.Tasks[0].LatestMarking,
 				Hours:       7.5,
 				Editable:    true,
@@ -146,9 +138,7 @@ var days = []Day{
 			Entry{
 				ID:          4,
 				ProjectID:   absenceProject.ID,
-				ProjectName: absenceProject.Name,
 				TaskID:      absenceProject.Tasks[2].ID,
-				TaskName:    absenceProject.Tasks[2].Name,
 				Description: absenceProject.Tasks[2].LatestMarking,
 				Hours:       2.5,
 				Editable:    true,
@@ -156,9 +146,7 @@ var days = []Day{
 			Entry{
 				ID:          5,
 				ProjectID:   customerProject.ID,
-				ProjectName: customerProject.Name,
 				TaskID:      customerProject.Tasks[0].ID,
-				TaskName:    customerProject.Tasks[0].Name,
 				Description: "Customer work",
 				Hours:       5.0,
 				Editable:    true,
@@ -172,9 +160,7 @@ var days = []Day{
 			Entry{
 				ID:          6,
 				ProjectID:   inactiveProject.ID,
-				ProjectName: inactiveProject.Name,
 				TaskID:      inactiveProject.Tasks[0].ID,
-				TaskName:    inactiveProject.Tasks[0].Name,
 				Description: inactiveProject.Tasks[0].LatestMarking,
 				Hours:       9.0,
 				Editable:    false,
