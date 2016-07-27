@@ -3,6 +3,8 @@ package api
 import (
 	"math"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -52,4 +54,19 @@ func ShuffleTasks(tasks []Task) {
 		j := r.Intn(i + 1)
 		tasks[i], tasks[j] = tasks[j], tasks[i]
 	}
+}
+
+func RandomFail() bool {
+	r := RandomFloat64(0, 1)
+	env := os.Getenv("FAIL_RATIO")
+	if env == "" {
+		env = "0"
+	}
+
+	failRatio, err := strconv.ParseFloat(env, 64)
+	if err != nil {
+		return true
+	}
+
+	return r <= failRatio
 }

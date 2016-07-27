@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
@@ -29,7 +30,11 @@ func Router() *httprouter.Router {
 func userGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Printf("%v\t%v", r.Method, r.URL)
 	response := MockUserResponse()
-	sendOK(response, w)
+	if RandomFail() {
+		sendError(errors.New("Could not load user data"), w)
+	} else {
+		sendOK(response, w)
+	}
 }
 
 func hoursGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -41,7 +46,12 @@ func hoursGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	sendOK(response, w)
+
+	if RandomFail() {
+		sendError(errors.New("Could not load hours"), w)
+	} else {
+		sendOK(response, w)
+	}
 }
 
 func entryPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -59,7 +69,11 @@ func entryPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	sendOK(response, w)
+	if RandomFail() {
+		sendError(errors.New("Could create new entry"), w)
+	} else {
+		sendOK(response, w)
+	}
 }
 
 func entryPUT(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
@@ -77,7 +91,11 @@ func entryPUT(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	sendOK(response, w)
+	if RandomFail() {
+		sendError(errors.New("Could not update entry"), w)
+	} else {
+		sendOK(response, w)
+	}
 }
 
 func entryDELETE(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -87,7 +105,11 @@ func entryDELETE(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	sendOK(response, w)
+	if RandomFail() {
+		sendError(errors.New("Could not delete entry"), w)
+	} else {
+		sendOK(response, w)
+	}
 }
 
 func sendOK(response interface{}, w http.ResponseWriter) {
