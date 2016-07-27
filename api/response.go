@@ -113,7 +113,7 @@ func MockUserResponse() UserResponse {
 	}
 }
 
-type HoursUpdateRequest struct {
+type EntryUpdateRequest struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
@@ -121,16 +121,16 @@ type HoursUpdateRequest struct {
 	Hours       float64 `json:"hours"`
 }
 
-type HoursUpdateResponse struct {
+type EntryUpdateResponse struct {
 	User  UserResponse  `json:"user"`
 	Hours HoursResponse `json:"hours"`
 }
 
-func MockHoursPOSTResponse(request HoursUpdateRequest) (HoursUpdateResponse, error) {
+func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, error) {
 	ShuffleProjects(projects)
 	date, err := time.Parse(DATE_FORMAT, request.Date)
 	if err != nil {
-		return HoursUpdateResponse{}, err
+		return EntryUpdateResponse{}, err
 	}
 
 	months := make(map[string]Month)
@@ -155,7 +155,7 @@ func MockHoursPOSTResponse(request HoursUpdateRequest) (HoursUpdateResponse, err
 			},
 		},
 	}
-	response := HoursUpdateResponse{
+	response := EntryUpdateResponse{
 		User: UserResponse{
 			FirstName:       "Test",
 			LastName:        "User",
@@ -174,15 +174,15 @@ func MockHoursPOSTResponse(request HoursUpdateRequest) (HoursUpdateResponse, err
 	return response, nil
 }
 
-func MockHoursPUTResponse(id string, request HoursUpdateRequest) (HoursUpdateResponse, error) {
+func MockEntryPUTResponse(id string, request EntryUpdateRequest) (EntryUpdateResponse, error) {
 	parse, err := strconv.ParseInt(id, 10, 32)
 	if err != nil {
-		return HoursUpdateResponse{}, nil
+		return EntryUpdateResponse{}, nil
 	}
 	ID := int(parse)
-	response, err := MockHoursPOSTResponse(request)
+	response, err := MockEntryPOSTResponse(request)
 	if err != nil {
-		return HoursUpdateResponse{}, nil
+		return EntryUpdateResponse{}, nil
 	}
 
 	for _, month := range response.Hours.Months {
@@ -193,8 +193,8 @@ func MockHoursPUTResponse(id string, request HoursUpdateRequest) (HoursUpdateRes
 	return response, nil
 }
 
-func MockHoursDeleteResponse() (HoursUpdateResponse, error) {
-	response, err := MockHoursPOSTResponse(HoursUpdateRequest{
+func MockEntryDELETEResponse() (EntryUpdateResponse, error) {
+	response, err := MockEntryPOSTResponse(EntryUpdateRequest{
 		Date:        time.Now().Format(DATE_FORMAT),
 		ProjectID:   1,
 		TaskID:      1,
@@ -202,11 +202,12 @@ func MockHoursDeleteResponse() (HoursUpdateResponse, error) {
 		Hours:       7.5,
 	})
 	if err != nil {
-		return HoursUpdateResponse{}, nil
+		return EntryUpdateResponse{}, nil
 	}
 	for _, month := range response.Hours.Months {
 		for key, day := range month.Days {
 			day.Entries = make([]Entry, 0, 0)
+			day.Hours = 0
 			month.Days[key] = day
 		}
 	}

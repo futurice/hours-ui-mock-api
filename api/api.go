@@ -18,9 +18,10 @@ func Router() *httprouter.Router {
 	router.GET(baseUrl+"/user/", userGET)
 
 	router.GET(baseUrl+"/hours/", hoursGET)
-	router.POST(baseUrl+"/hours/", hoursPOST)
-	router.PUT(baseUrl+"/hours/:id", hoursPUT)
-	router.DELETE(baseUrl+"/hours/:id", hoursDelete)
+
+	router.POST(baseUrl+"/entry/", entryPOST)
+	router.PUT(baseUrl+"/entry/:id", entryPUT)
+	router.DELETE(baseUrl+"/entry/:id", entryDELETE)
 
 	return router
 }
@@ -43,17 +44,17 @@ func hoursGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	sendOK(response, w)
 }
 
-func hoursPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func entryPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Printf("%v\t%v", r.Method, r.URL)
 
-	var body HoursUpdateRequest
+	var body EntryUpdateRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&body)
 	if err != nil {
 		sendError(err, w)
 		return
 	}
-	response, err := MockHoursPOSTResponse(body)
+	response, err := MockEntryPOSTResponse(body)
 	if err != nil {
 		sendError(err, w)
 		return
@@ -61,17 +62,17 @@ func hoursPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	sendOK(response, w)
 }
 
-func hoursPUT(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func entryPUT(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	log.Printf("%v\t%v", r.Method, r.URL)
 
-	var body HoursUpdateRequest
+	var body EntryUpdateRequest
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&body)
 	if err != nil {
 		sendError(err, w)
 		return
 	}
-	response, err := MockHoursPUTResponse(p.ByName("id"), body)
+	response, err := MockEntryPUTResponse(p.ByName("id"), body)
 	if err != nil {
 		sendError(err, w)
 		return
@@ -79,9 +80,9 @@ func hoursPUT(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	sendOK(response, w)
 }
 
-func hoursDelete(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func entryDELETE(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Printf("%v\t%v", r.Method, r.URL)
-	response, err := MockHoursDeleteResponse()
+	response, err := MockEntryDELETEResponse()
 	if err != nil {
 		sendError(err, w)
 		return
@@ -90,7 +91,7 @@ func hoursDelete(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func sendOK(response interface{}, w http.ResponseWriter) {
-	duration := int(RandomFloat64(500, 1000))
+	duration := int(RandomFloat64(1000, 3000))
 	time.Sleep(time.Millisecond * time.Duration(duration))
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -101,7 +102,7 @@ func sendOK(response interface{}, w http.ResponseWriter) {
 }
 
 func sendError(err error, w http.ResponseWriter) {
-	duration := int(RandomFloat64(500, 1000))
+	duration := int(RandomFloat64(1000, 3000))
 	time.Sleep(time.Millisecond * time.Duration(duration))
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

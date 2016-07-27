@@ -105,6 +105,14 @@ var days = []Day{
 	},
 	Day{
 		UtilizationRate: 0.0,
+		Hours:           0.0,
+	},
+	Day{
+		UtilizationRate: 0.0,
+		Hours:           0.0,
+	},
+	Day{
+		UtilizationRate: 0.0,
 		Hours:           7.5,
 		Entries: []Entry{
 			Entry{
