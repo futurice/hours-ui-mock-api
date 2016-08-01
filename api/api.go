@@ -131,8 +131,8 @@ func sendError(err error, w http.ResponseWriter) {
 	log.Println(err)
 	w.WriteHeader(http.StatusInternalServerError)
 	errorResponse := ErrorResponse{
-		Status:     http.StatusInternalServerError,
-		StatusText: err.Error(),
+		Status: http.StatusInternalServerError,
+		Error:  err.Error(),
 	}
 	if err := json.NewEncoder(w).Encode(errorResponse); err != nil {
 		log.Panic(err)

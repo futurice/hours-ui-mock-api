@@ -6,8 +6,8 @@ import (
 )
 
 type ErrorResponse struct {
-	Status     int    `json:"status"`
-	StatusText string `json:"statusText"`
+	Status int    `json:"status"`
+	Error  string `json:"error"`
 }
 
 type HoursResponse struct {
