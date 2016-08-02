@@ -6,6 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -30,7 +31,7 @@ func Router() *httprouter.Router {
 func userGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Printf("%v\t%v", r.Method, r.URL)
 	response := MockUserResponse()
-	if RandomFail() {
+	if RandomFail() || os.Getenv("FAIL_USER_GET") == "true" {
 		sendError(errors.New("Could not load user data"), w)
 	} else {
 		sendOK(response, w)
@@ -47,7 +48,7 @@ func hoursGET(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	if RandomFail() {
+	if RandomFail() || os.Getenv("FAIL_HOURS_GET") == "true" {
 		sendError(errors.New("Could not load hours"), w)
 	} else {
 		sendOK(response, w)
@@ -69,7 +70,7 @@ func entryPOST(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	if RandomFail() {
+	if RandomFail() || os.Getenv("FAIL_ENTRY_POST") == "true" {
 		sendError(errors.New("Could create new entry"), w)
 	} else {
 		sendOK(response, w)
@@ -91,7 +92,7 @@ func entryPUT(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	if RandomFail() {
+	if RandomFail() || os.Getenv("FAIL_ENTRY_PUT") == "true" {
 		sendError(errors.New("Could not update entry"), w)
 	} else {
 		sendOK(response, w)
@@ -105,7 +106,7 @@ func entryDELETE(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		sendError(err, w)
 		return
 	}
-	if RandomFail() {
+	if RandomFail() || os.Getenv("FAIL_ENTRY_DELETE") == "true" {
 		sendError(errors.New("Could not delete entry"), w)
 	} else {
 		sendOK(response, w)
