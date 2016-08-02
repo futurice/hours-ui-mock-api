@@ -16,10 +16,22 @@ type HoursResponse struct {
 	DefaultWorkHours float64          `json:"defaultWorkHours"`
 }
 
+type HoursUpdateResponse struct {
+	Projects         []Project              `json:"projects"`
+	Months           map[string]MonthUpdate `json:"months"`
+	DefaultWorkHours float64                `json:"defaultWorkHours"`
+}
+
 type Month struct {
 	Hours           float64        `json:"hours"`
 	UtilizationRate float64        `json:"utilizationRate"`
 	Days            map[string]Day `json:"days"`
+}
+
+type MonthUpdate struct {
+	Hours           float64              `json:"hours"`
+	UtilizationRate float64              `json:"utilizationRate"`
+	Days            map[string]DayUpdate `json:"days"`
 }
 
 type Day struct {
@@ -27,6 +39,13 @@ type Day struct {
 	Hours           float64 `json:"hours"`
 	UtilizationRate float64 `json:"utilizationRate"`
 	Entries         []Entry `json:"entries"`
+}
+
+type DayUpdate struct {
+	HolidayName     string  `json:"holidayName,omitempty"`
+	Hours           float64 `json:"hours"`
+	UtilizationRate float64 `json:"utilizationRate"`
+	Entry           *Entry  `json:"entry,omitempty"`
 }
 
 type Entry struct {
@@ -122,8 +141,8 @@ type EntryUpdateRequest struct {
 }
 
 type EntryUpdateResponse struct {
-	User  UserResponse  `json:"user"`
-	Hours HoursResponse `json:"hours"`
+	User  UserResponse        `json:"user"`
+	Hours HoursUpdateResponse `json:"hours"`
 }
 
 func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, error) {
@@ -133,28 +152,27 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 		return EntryUpdateResponse{}, err
 	}
 
-	months := make(map[string]Month)
+	months := make(map[string]MonthUpdate)
 
-	months[date.Format(MONTH_FORMAT)] = Month{
+	months[date.Format(MONTH_FORMAT)] = MonthUpdate{
 		Hours:           RoundToHalf(RandomFloat64(0, 150)),
 		UtilizationRate: RandomFloat64(0, 100),
-		Days:            make(map[string]Day),
+		Days:            make(map[string]DayUpdate),
 	}
 
-	months[date.Format(MONTH_FORMAT)].Days[date.Format(DATE_FORMAT)] = Day{
+	months[date.Format(MONTH_FORMAT)].Days[date.Format(DATE_FORMAT)] = DayUpdate{
 		Hours:           request.Hours,
 		UtilizationRate: 100.0,
-		Entries: []Entry{
-			Entry{
-				ID:          int(RandomFloat64(0, 100)),
-				ProjectID:   request.ProjectID,
-				TaskID:      request.TaskID,
-				Description: request.Description,
-				Hours:       request.Hours,
-				Editable:    true,
-			},
+		Entry: &Entry{
+			ID:          int(RandomFloat64(0, 100)),
+			ProjectID:   request.ProjectID,
+			TaskID:      request.TaskID,
+			Description: request.Description,
+			Hours:       request.Hours,
+			Editable:    true,
 		},
 	}
+
 	response := EntryUpdateResponse{
 		User: UserResponse{
 			FirstName:       "Test",
@@ -164,7 +182,7 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 			UtilizationRate: RandomFloat64(0, 100),
 			ProfilePicture:  "https://raw.githubusercontent.com/futurice/spiceprogram/gh-pages/assets/img/logo/chilicorn_no_text-128.png",
 		},
-		Hours: HoursResponse{
+		Hours: HoursUpdateResponse{
 			Projects:         projects,
 			Months:           months,
 			DefaultWorkHours: 7.5,
@@ -187,7 +205,7 @@ func MockEntryPUTResponse(id string, request EntryUpdateRequest) (EntryUpdateRes
 
 	for _, month := range response.Hours.Months {
 		for _, day := range month.Days {
-			day.Entries[0].ID = ID
+			day.Entry.ID = ID
 		}
 	}
 	return response, nil
@@ -206,7 +224,7 @@ func MockEntryDELETEResponse() (EntryUpdateResponse, error) {
 	}
 	for _, month := range response.Hours.Months {
 		for key, day := range month.Days {
-			day.Entries = make([]Entry, 0, 0)
+			day.Entry = nil
 			day.Hours = 0
 			month.Days[key] = day
 		}
