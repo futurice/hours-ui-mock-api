@@ -87,24 +87,6 @@ var projects = []Project{
 	inactiveProject,
 }
 
-var mostRecentProjects = []MostRecentProject{
-	MostRecentProject{
-		ID:   internalProject.ID,
-		Name: internalProject.Name,
-		MostRecentTasks: []Task{
-			internalProject.Tasks[0],
-			internalProject.Tasks[1],
-		},
-	},
-	MostRecentProject{
-		ID:   customerProject.ID,
-		Name: customerProject.Name,
-		MostRecentTasks: []Task{
-			customerProject.Tasks[0],
-		},
-	},
-}
-
 var days = []Day{
 	Day{
 		Hours: 5,

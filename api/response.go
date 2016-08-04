@@ -11,17 +11,15 @@ type ErrorResponse struct {
 }
 
 type HoursResponse struct {
-	DefaultWorkHours   float64             `json:"defaultWorkHours"`
-	MostRecentProjects []MostRecentProject `json:"mostRecentProjects"`
-	Projects           []Project           `json:"projects"`
-	Months             map[string]Month    `json:"months"`
+	DefaultWorkHours float64          `json:"defaultWorkHours"`
+	Projects         []Project        `json:"projects"`
+	Months           map[string]Month `json:"months"`
 }
 
 type HoursUpdateResponse struct {
-	DefaultWorkHours   float64                `json:"defaultWorkHours"`
-	MostRecentProjects []MostRecentProject    `json:"mostRecentProjects"`
-	Projects           []Project              `json:"projects"`
-	Months             map[string]MonthUpdate `json:"months"`
+	DefaultWorkHours float64                `json:"defaultWorkHours"`
+	Projects         []Project              `json:"projects"`
+	Months           map[string]MonthUpdate `json:"months"`
 }
 
 type Month struct {
@@ -58,7 +56,7 @@ type Entry struct {
 	Closed      bool    `json:"closed,omitempty"`
 }
 
-// Every project that is assigned to the user, if closed, don't show in ui
+// Every project that is assigned to the user, if closed, don't show in ui. Sorted based on most recent usage
 type Project struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
@@ -66,13 +64,7 @@ type Project struct {
 	Closed bool   `json:"closed,omitempty"`
 }
 
-type MostRecentProject struct {
-	ID              int    `json:"id"`
-	Name            string `json:"name"`
-	MostRecentTasks []Task `json:"mostRecentTasks"`
-}
-
-// Every task that is assigned to the user, if closed, don't show in ui
+// Every task that is assigned to the user, if closed, don't show in ui. Sorted based on most recent usage
 type Task struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
@@ -115,10 +107,9 @@ func MockHoursResponse(startDate, endDate string) (HoursResponse, error) {
 	}
 
 	response := HoursResponse{
-		Projects:           projects,
-		Months:             months,
-		DefaultWorkHours:   7.5,
-		MostRecentProjects: mostRecentProjects,
+		Projects:         projects,
+		Months:           months,
+		DefaultWorkHours: 7.5,
 	}
 
 	return response, nil
@@ -160,6 +151,7 @@ type EntryUpdateResponse struct {
 }
 
 func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, error) {
+	ShuffleProjects(projects)
 	date, err := time.Parse(DATE_FORMAT, request.Date)
 	if err != nil {
 		return EntryUpdateResponse{}, err
@@ -185,33 +177,6 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 		},
 	}
 
-	mostRecent := make([]MostRecentProject, 1)
-
-	_projects := projects
-
-	for i, project := range projects {
-		if project.ID == request.ProjectID {
-			for j, task := range project.Tasks {
-				if task.ID == request.TaskID {
-					_task := task
-					_task.LatestMarking = request.Description
-					if !request.Closed {
-						mostRecent[0] = MostRecentProject{
-							ID:   project.ID,
-							Name: project.Name,
-							MostRecentTasks: []Task{
-								_task,
-							},
-						}
-						_projects[i].Tasks[j] = _task
-					} else {
-						mostRecent[0] = mostRecentProjects[0]
-					}
-				}
-			}
-		}
-	}
-
 	response := EntryUpdateResponse{
 		User: UserResponse{
 			FirstName:       "Test",
@@ -222,10 +187,9 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 			ProfilePicture:  "https://raw.githubusercontent.com/futurice/spiceprogram/gh-pages/assets/img/logo/chilicorn_no_text-128.png",
 		},
 		Hours: HoursUpdateResponse{
-			DefaultWorkHours:   7.5,
-			MostRecentProjects: mostRecent,
-			Projects:           _projects,
-			Months:             months,
+			DefaultWorkHours: 7.5,
+			Projects:         projects,
+			Months:           months,
 		},
 	}
 
