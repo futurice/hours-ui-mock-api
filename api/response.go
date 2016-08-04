@@ -18,9 +18,10 @@ type HoursResponse struct {
 }
 
 type HoursUpdateResponse struct {
-	Months             map[string]MonthUpdate `json:"months"`
 	DefaultWorkHours   float64                `json:"defaultWorkHours"`
 	MostRecentProjects []MostRecentProject    `json:"mostRecentProjects"`
+	Projects           []Project              `json:"projects"`
+	Months             map[string]MonthUpdate `json:"months"`
 }
 
 type Month struct {
@@ -216,9 +217,10 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 			ProfilePicture:  "https://raw.githubusercontent.com/futurice/spiceprogram/gh-pages/assets/img/logo/chilicorn_no_text-128.png",
 		},
 		Hours: HoursUpdateResponse{
-			MostRecentProjects: mostRecent,
-			Months:             months,
 			DefaultWorkHours:   7.5,
+			MostRecentProjects: mostRecent,
+			Projects:           projects,
+			Months:             months,
 		},
 	}
 
