@@ -187,18 +187,23 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 
 	mostRecent := make([]MostRecentProject, 1)
 
-	for _, project := range projects {
+	_projects := projects
+
+	for i, project := range projects {
 		if project.ID == request.ProjectID {
-			for _, task := range project.Tasks {
+			for j, task := range project.Tasks {
 				if task.ID == request.TaskID {
+					_task := task
+					_task.LatestMarking = request.Description
 					if !request.Closed {
 						mostRecent[0] = MostRecentProject{
 							ID:   project.ID,
 							Name: project.Name,
 							MostRecentTasks: []Task{
-								task,
+								_task,
 							},
 						}
+						_projects[i].Tasks[j] = _task
 					} else {
 						mostRecent[0] = mostRecentProjects[0]
 					}
@@ -219,7 +224,7 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 		Hours: HoursUpdateResponse{
 			DefaultWorkHours:   7.5,
 			MostRecentProjects: mostRecent,
-			Projects:           projects,
+			Projects:           _projects,
 			Months:             months,
 		},
 	}
