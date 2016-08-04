@@ -54,7 +54,7 @@ type Entry struct {
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
-	Editable    bool    `json:"editable"`
+	Disabled    bool    `json:"disabled,omitempty"`
 }
 
 type Project struct {
@@ -68,6 +68,7 @@ type Task struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	LatestMarking string `json:"latestMarking"`
+	Absence       bool   `json:"absence,omitempty"`
 }
 
 const DATE_FORMAT = "2006-01-02"
@@ -138,6 +139,8 @@ type EntryUpdateRequest struct {
 	Description string  `json:"description"`
 	Date        string  `json:"date"`
 	Hours       float64 `json:"hours"`
+	// When frontend sends disabled entry to be updated, API doesn't do anything, just respond ok
+	Disabled bool `json:"disabled,omitempty"`
 }
 
 type EntryUpdateResponse struct {
@@ -169,7 +172,7 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 			TaskID:      request.TaskID,
 			Description: request.Description,
 			Hours:       request.Hours,
-			Editable:    true,
+			Disabled:    request.Disabled,
 		},
 	}
 
