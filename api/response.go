@@ -11,15 +11,16 @@ type ErrorResponse struct {
 }
 
 type HoursResponse struct {
-	Projects         []Project        `json:"projects"`
-	Months           map[string]Month `json:"months"`
-	DefaultWorkHours float64          `json:"defaultWorkHours"`
+	DefaultWorkHours   float64             `json:"defaultWorkHours"`
+	MostRecentProjects []MostRecentProject `json:"mostRecentProjects"`
+	Projects           []Project           `json:"projects"`
+	Months             map[string]Month    `json:"months"`
 }
 
 type HoursUpdateResponse struct {
-	Projects         []Project              `json:"projects"`
-	Months           map[string]MonthUpdate `json:"months"`
-	DefaultWorkHours float64                `json:"defaultWorkHours"`
+	Months             map[string]MonthUpdate `json:"months"`
+	DefaultWorkHours   float64                `json:"defaultWorkHours"`
+	MostRecentProjects []MostRecentProject    `json:"mostRecentProjects"`
 }
 
 type Month struct {
@@ -35,17 +36,16 @@ type MonthUpdate struct {
 }
 
 type Day struct {
-	HolidayName     string  `json:"holidayName,omitempty"`
-	Hours           float64 `json:"hours"`
-	UtilizationRate float64 `json:"utilizationRate"`
-	Entries         []Entry `json:"entries"`
+	HolidayName string  `json:"holidayName,omitempty"`
+	Hours       float64 `json:"hours"`
+	Entries     []Entry `json:"entries"`
+	Closed      bool    `json:"closed,omitempty"`
 }
 
 type DayUpdate struct {
-	HolidayName     string  `json:"holidayName,omitempty"`
-	Hours           float64 `json:"hours"`
-	UtilizationRate float64 `json:"utilizationRate"`
-	Entry           *Entry  `json:"entry,omitempty"`
+	HolidayName string  `json:"holidayName,omitempty"`
+	Hours       float64 `json:"hours"`
+	Entry       *Entry  `json:"entry,omitempty"`
 }
 
 type Entry struct {
@@ -54,21 +54,30 @@ type Entry struct {
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
-	Disabled    bool    `json:"disabled,omitempty"`
+	Closed      bool    `json:"closed,omitempty"`
 }
 
+// Every project that is assigned to the user, if closed, don't show in ui
 type Project struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
-	Active bool   `json:"active"`
 	Tasks  []Task `json:"tasks"`
+	Closed bool   `json:"closed,omitempty"`
 }
 
+type MostRecentProject struct {
+	ID              int    `json:"id"`
+	Name            string `json:"name"`
+	MostRecentTasks []Task `json:"mostRecentTasks"`
+}
+
+// Every task that is assigned to the user, if closed, don't show in ui
 type Task struct {
 	ID            int    `json:"id"`
 	Name          string `json:"name"`
 	LatestMarking string `json:"latestMarking"`
 	Absence       bool   `json:"absence,omitempty"`
+	Closed        bool   `json:"closed,omitempty"`
 }
 
 const DATE_FORMAT = "2006-01-02"
@@ -105,9 +114,10 @@ func MockHoursResponse(startDate, endDate string) (HoursResponse, error) {
 	}
 
 	response := HoursResponse{
-		Projects:         projects,
-		Months:           months,
-		DefaultWorkHours: 7.5,
+		Projects:           projects,
+		Months:             months,
+		DefaultWorkHours:   7.5,
+		MostRecentProjects: mostRecentProjects,
 	}
 
 	return response, nil
@@ -139,8 +149,8 @@ type EntryUpdateRequest struct {
 	Description string  `json:"description"`
 	Date        string  `json:"date"`
 	Hours       float64 `json:"hours"`
-	// When frontend sends disabled entry to be updated, API doesn't do anything, just respond ok
-	Disabled bool `json:"disabled,omitempty"`
+	// When frontend sends closed entry to be updated, API doesn't do anything, just respond ok
+	Closed bool `json:"closed,omitempty"`
 }
 
 type EntryUpdateResponse struct {
@@ -149,7 +159,6 @@ type EntryUpdateResponse struct {
 }
 
 func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, error) {
-	ShuffleProjects(projects)
 	date, err := time.Parse(DATE_FORMAT, request.Date)
 	if err != nil {
 		return EntryUpdateResponse{}, err
@@ -164,16 +173,37 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 	}
 
 	months[date.Format(MONTH_FORMAT)].Days[date.Format(DATE_FORMAT)] = DayUpdate{
-		Hours:           request.Hours,
-		UtilizationRate: 100.0,
+		Hours: request.Hours,
 		Entry: &Entry{
 			ID:          int(RandomFloat64(0, 100)),
 			ProjectID:   request.ProjectID,
 			TaskID:      request.TaskID,
 			Description: request.Description,
 			Hours:       request.Hours,
-			Disabled:    request.Disabled,
+			Closed:      request.Closed,
 		},
+	}
+
+	mostRecent := make([]MostRecentProject, 1)
+
+	for _, project := range projects {
+		if project.ID == request.ProjectID {
+			for _, task := range project.Tasks {
+				if task.ID == request.TaskID {
+					if !request.Closed {
+						mostRecent[0] = MostRecentProject{
+							ID:   project.ID,
+							Name: project.Name,
+							MostRecentTasks: []Task{
+								task,
+							},
+						}
+					} else {
+						mostRecent[0] = mostRecentProjects[0]
+					}
+				}
+			}
+		}
 	}
 
 	response := EntryUpdateResponse{
@@ -186,9 +216,9 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 			ProfilePicture:  "https://raw.githubusercontent.com/futurice/spiceprogram/gh-pages/assets/img/logo/chilicorn_no_text-128.png",
 		},
 		Hours: HoursUpdateResponse{
-			Projects:         projects,
-			Months:           months,
-			DefaultWorkHours: 7.5,
+			MostRecentProjects: mostRecent,
+			Months:             months,
+			DefaultWorkHours:   7.5,
 		},
 	}
 

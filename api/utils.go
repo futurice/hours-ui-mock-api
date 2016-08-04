@@ -39,23 +39,6 @@ func RoundToHalf(val float64) float64 {
 	}
 }
 
-func ShuffleProjects(projects []Project) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	for i, project := range projects {
-		ShuffleTasks(project.Tasks)
-		j := r.Intn(i + 1)
-		projects[i], projects[j] = projects[j], projects[i]
-	}
-}
-
-func ShuffleTasks(tasks []Task) {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	for i := range tasks {
-		j := r.Intn(i + 1)
-		tasks[i], tasks[j] = tasks[j], tasks[i]
-	}
-}
-
 func RandomFail() bool {
 	r := RandomFloat64(0, 1)
 	env := os.Getenv("FAIL_RATIO")

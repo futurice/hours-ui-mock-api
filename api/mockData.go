@@ -1,9 +1,8 @@
 package api
 
 var internalProject = Project{
-	ID:     1,
-	Name:   "Internal work",
-	Active: true,
+	ID:   1,
+	Name: "Internal work",
 	Tasks: []Task{
 		Task{
 			ID:            1,
@@ -19,9 +18,8 @@ var internalProject = Project{
 }
 
 var absenceProject = Project{
-	ID:     4,
-	Name:   "Absences",
-	Active: true,
+	ID:   4,
+	Name: "Absences",
 	Tasks: []Task{
 		Task{
 			ID:            6,
@@ -45,9 +43,8 @@ var absenceProject = Project{
 }
 
 var customerProject = Project{
-	ID:     2,
-	Name:   "Actual customer work",
-	Active: true,
+	ID:   2,
+	Name: "Actual customer work",
 	Tasks: []Task{
 		Task{
 			ID:            3,
@@ -58,6 +55,7 @@ var customerProject = Project{
 			ID:            4,
 			Name:          "On-Call",
 			LatestMarking: "Long weekend :(",
+			Closed:        true,
 		},
 	},
 }
@@ -65,12 +63,19 @@ var customerProject = Project{
 var inactiveProject = Project{
 	ID:     3,
 	Name:   "Not active project",
-	Active: false,
+	Closed: true,
 	Tasks: []Task{
 		Task{
 			ID:            5,
 			Name:          "Work",
 			LatestMarking: "Doing work",
+			Closed:        true,
+		},
+		Task{
+			ID:            6,
+			Name:          "Design",
+			LatestMarking: "Designing",
+			Closed:        true,
 		},
 	},
 }
@@ -82,10 +87,27 @@ var projects = []Project{
 	inactiveProject,
 }
 
+var mostRecentProjects = []MostRecentProject{
+	MostRecentProject{
+		ID:   internalProject.ID,
+		Name: internalProject.Name,
+		MostRecentTasks: []Task{
+			internalProject.Tasks[0],
+			internalProject.Tasks[1],
+		},
+	},
+	MostRecentProject{
+		ID:   customerProject.ID,
+		Name: customerProject.Name,
+		MostRecentTasks: []Task{
+			customerProject.Tasks[0],
+		},
+	},
+}
+
 var days = []Day{
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           5,
+		Hours: 5,
 		Entries: []Entry{
 			Entry{
 				ID:          1,
@@ -97,25 +119,21 @@ var days = []Day{
 		},
 	},
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           0.0,
-		HolidayName:     "Public holiday",
+		Hours:       0.0,
+		HolidayName: "Public holiday",
 	},
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           0.0,
+		Hours: 0.0,
 	},
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           0.0,
+		Hours: 0.0,
 	},
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           0.0,
+		Closed: true,
+		Hours:  0.0,
 	},
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           7.5,
+		Hours: 7.5,
 		Entries: []Entry{
 			Entry{
 				ID:          2,
@@ -127,8 +145,8 @@ var days = []Day{
 		},
 	},
 	Day{
-		UtilizationRate: 0.0,
-		Hours:           7.5,
+		Closed: true,
+		Hours:  7.5,
 		Entries: []Entry{
 			Entry{
 				ID:          3,
@@ -140,8 +158,20 @@ var days = []Day{
 		},
 	},
 	Day{
-		UtilizationRate: 66.66666,
-		Hours:           7.5,
+		Hours: 10,
+		Entries: []Entry{
+			Entry{
+				ID:          13,
+				ProjectID:   customerProject.ID,
+				TaskID:      customerProject.Tasks[1].ID,
+				Description: customerProject.Tasks[1].LatestMarking,
+				Hours:       10,
+				Closed:      true,
+			},
+		},
+	},
+	Day{
+		Hours: 7.5,
 		Entries: []Entry{
 			Entry{
 				ID:          4,
@@ -160,8 +190,7 @@ var days = []Day{
 		},
 	},
 	Day{
-		UtilizationRate: 100.0,
-		Hours:           9.0,
+		Hours: 9.0,
 		Entries: []Entry{
 			Entry{
 				ID:          6,
@@ -169,7 +198,7 @@ var days = []Day{
 				TaskID:      inactiveProject.Tasks[0].ID,
 				Description: inactiveProject.Tasks[0].LatestMarking,
 				Hours:       9.0,
-				Disabled:    true,
+				Closed:      true,
 			},
 		},
 	},

@@ -4,7 +4,7 @@ import "testing"
 
 func TestRoundToHalf(t *testing.T) {
 	type testCase struct {
-		initial float64
+		initial  float64
 		expected float64
 	}
 
