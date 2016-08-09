@@ -66,11 +66,11 @@ type Project struct {
 
 // Every task that is assigned to the user, if closed, don't show in ui. Sorted based on most recent usage
 type Task struct {
-	ID            int    `json:"id"`
-	Name          string `json:"name"`
-	LatestMarking string `json:"latestMarking"`
-	Absence       bool   `json:"absence,omitempty"`
-	Closed        bool   `json:"closed,omitempty"`
+	ID                int    `json:"id"`
+	Name              string `json:"name"`
+	LatestDescription string `json:"latestDescription"`
+	Absence           bool   `json:"absence,omitempty"`
+	Closed            bool   `json:"closed,omitempty"`
 }
 
 const DATE_FORMAT = "2006-01-02"
