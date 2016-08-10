@@ -72,16 +72,40 @@ type Project struct {
 // Every task that is assigned to the user, sorted based on most recent usage.
 // UI hides tasks that are closed and were the latest entry was made over two months ago
 type Task struct {
-	ID                int    `json:"id"`
-	Name              string `json:"name"`
-	LatestDescription string `json:"latestDescription"`
-	Absence           bool   `json:"absence,omitempty"`
-	Closed            bool   `json:"closed,omitempty"`
-	LatestEntry       string `json:"latestEntry"`
+	ID          int         `json:"id"`
+	Name        string      `json:"name"`
+	Absence     bool        `json:"absence,omitempty"`
+	Closed      bool        `json:"closed,omitempty"`
+	LatestEntry LatestEntry `json:"latestEntry"`
+}
+
+type LatestEntry struct {
+	Date        string  `json:"date"`
+	ID          int     `json:"id"`
+	ProjectID   int     `json:"projectID"`
+	TaskID      int     `json:"taskID"`
+	Description string  `json:"description"`
+	Hours       float64 `json:"hours"`
+	Closed      bool    `json:"closed,omitempty"`
 }
 
 const DATE_FORMAT = "2006-01-02"
 const MONTH_FORMAT = "2006-01"
+
+func fillProjects() []Project {
+	filledProjects := make([]Project, len(projects))
+	for i, project := range projects {
+		_project := project
+		for j, task := range project.Tasks {
+			_task := task
+			_task.LatestEntry.Date = time.Now().Format(DATE_FORMAT)
+			_task.LatestEntry.Hours = RoundToHalf(RandomFloat64(0.5, 7.5))
+			_project.Tasks[j] = _task
+		}
+		filledProjects[i] = _project
+	}
+	return filledProjects
+}
 
 func MockHoursResponse(startDate, endDate string) (HoursResponse, error) {
 	start, err := time.Parse(DATE_FORMAT, startDate)
@@ -112,19 +136,10 @@ func MockHoursResponse(startDate, endDate string) (HoursResponse, error) {
 		}
 		month.Days[day.Format(DATE_FORMAT)] = days[i%len(days)]
 	}
-	filledProjects := make([]Project, len(projects))
-	for i, project := range projects {
-		_project := project
-		for j, task := range project.Tasks {
-			_task := task
-			_task.LatestEntry = time.Now().Format(DATE_FORMAT)
-			_project.Tasks[j] = _task
-		}
-		filledProjects[i] = _project
-	}
+	filledProjects := fillProjects()
 
 	response := HoursResponse{
-		Projects:         projects,
+		Projects:         filledProjects,
 		Months:           months,
 		DefaultWorkHours: 7.5,
 	}
@@ -168,16 +183,7 @@ type EntryUpdateResponse struct {
 }
 
 func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, error) {
-	filledProjects := make([]Project, len(projects))
-	for i, project := range projects {
-		_project := project
-		for j, task := range project.Tasks {
-			_task := task
-			_task.LatestEntry = time.Now().Format(DATE_FORMAT)
-			_project.Tasks[j] = _task
-		}
-		filledProjects[i] = _project
-	}
+	filledProjects := fillProjects()
 	ShuffleProjects(filledProjects)
 	date, err := time.Parse(DATE_FORMAT, request.Date)
 	if err != nil {
