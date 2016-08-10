@@ -34,6 +34,8 @@ type MonthUpdate struct {
 	Days            map[string]DayUpdate `json:"days"`
 }
 
+// If the day is closed, one cannot mark entries to it. E.g. it should not be possible
+// to mark hours to days that are already invoiced
 type Day struct {
 	HolidayName string  `json:"holidayName,omitempty"`
 	Hours       float64 `json:"hours"`
@@ -41,12 +43,14 @@ type Day struct {
 	Closed      bool    `json:"closed,omitempty"`
 }
 
+// Only the created or updated entry is sent as an response. Deleted entry shows as null
 type DayUpdate struct {
 	HolidayName string  `json:"holidayName,omitempty"`
 	Hours       float64 `json:"hours"`
 	Entry       *Entry  `json:"entry,omitempty"`
 }
 
+// Entries are closed when they are invoiced and one cannot edit them afterwards
 type Entry struct {
 	ID          int     `json:"id"`
 	ProjectID   int     `json:"projectID"`
@@ -56,7 +60,8 @@ type Entry struct {
 	Closed      bool    `json:"closed,omitempty"`
 }
 
-// Every project that is assigned to the user, if closed, don't show in ui. Sorted based on most recent usage
+// Every project that is assigned to the user, sorted based on most recent usage.
+// UI hides projects that are closed and were the latest entry was made over two months ago
 type Project struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
@@ -64,7 +69,8 @@ type Project struct {
 	Closed bool   `json:"closed,omitempty"`
 }
 
-// Every task that is assigned to the user, if closed, don't show in ui. Sorted based on most recent usage
+// Every task that is assigned to the user, sorted based on most recent usage.
+// UI hides tasks that are closed and were the latest entry was made over two months ago
 type Task struct {
 	ID                int    `json:"id"`
 	Name              string `json:"name"`

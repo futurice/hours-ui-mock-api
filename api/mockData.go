@@ -184,4 +184,16 @@ var days = []Day{
 			},
 		},
 	},
+	Day{
+		Hours: 7.5,
+		Entries: []Entry{
+			Entry{
+				ID:          7,
+				ProjectID:   inactiveProject.ID,
+				TaskID:      inactiveProject.Tasks[0].ID,
+				Description: inactiveProject.Tasks[0].LatestDescription,
+				Hours:       7.5,
+			},
+		},
+	},
 }
