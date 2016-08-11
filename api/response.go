@@ -72,11 +72,12 @@ type Project struct {
 // Every task that is assigned to the user, sorted based on most recent usage.
 // UI hides tasks that are closed and were the latest entry was made over two months ago
 type Task struct {
-	ID          int         `json:"id"`
-	Name        string      `json:"name"`
-	Absence     bool        `json:"absence,omitempty"`
-	Closed      bool        `json:"closed,omitempty"`
-	LatestEntry LatestEntry `json:"latestEntry"`
+	ID             int         `json:"id"`
+	Name           string      `json:"name"`
+	Absence        bool        `json:"absence,omitempty"`
+	Closed         bool        `json:"closed,omitempty"`
+	LatestEntry    LatestEntry `json:"latestEntry"`
+	HoursRemaining float64     `json:"hoursRemaining,omitempty"`
 }
 
 type LatestEntry struct {
@@ -100,6 +101,9 @@ func fillProjects() []Project {
 			_task := task
 			_task.LatestEntry.Date = time.Now().Format(DATE_FORMAT)
 			_task.LatestEntry.Hours = RoundToHalf(RandomFloat64(0.5, 7.5))
+			if _project.ID != internalProject.ID && _project.ID != absenceProject.ID {
+				_task.HoursRemaining = RoundToHalf(RandomFloat64(-10, 20))
+			}
 			_project.Tasks[j] = _task
 		}
 		filledProjects[i] = _project
