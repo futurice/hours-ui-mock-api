@@ -1,6 +1,6 @@
 # hours-ui-mock-api
 
-Mock API for hours.futurice.com
+Mock API for [https://github.com/futurice/hours-ui](https://github.com/futurice/hours-ui)
 
 ## Setup
 
@@ -13,5 +13,9 @@ Mock API for hours.futurice.com
         - Run `go get github.com/julienschmidt/httprouter`
         - Run `go install github.com/futurice/hours-ui-mock-api`
         - Run `$GOPATH/bin/hours-ui-mock-api`
-    - Else you should install Docker or Go
-3. Now you can use this mock API when developing [hours-ui-cycle](https://github.com/futurice/hours-ui-cycle)
+    - Else you should install Docker or Go (`>=1.6`)
+3. Now you can use this mock API when developing [hours-ui](https://github.com/futurice/hours-ui)
+
+## License
+
+[MIT](LICENSE)
