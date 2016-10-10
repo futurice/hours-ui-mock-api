@@ -56,6 +56,7 @@ type Entry struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
+	Smiley			int			`json:"smiley"`
 	Hours       float64 `json:"hours"`
 	Closed      bool    `json:"closed,omitempty"`
 }
@@ -86,6 +87,7 @@ type LatestEntry struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
+	Smiley			int			`json:"smiley"`
 	Hours       float64 `json:"hours"`
 	Closed      bool    `json:"closed,omitempty"`
 }
@@ -175,6 +177,7 @@ type EntryUpdateRequest struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
+	Smiley			int			`json:"smiley"`
 	Date        string  `json:"date"`
 	Hours       float64 `json:"hours"`
 	// When frontend sends closed entry to be updated, API doesn't do anything, just respond ok
@@ -209,6 +212,7 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 			ProjectID:   request.ProjectID,
 			TaskID:      request.TaskID,
 			Description: request.Description,
+			Smiley:			 request.Smiley,
 			Hours:       request.Hours,
 			Closed:      request.Closed,
 		},
@@ -258,6 +262,7 @@ func MockEntryDELETEResponse() (EntryUpdateResponse, error) {
 		ProjectID:   1,
 		TaskID:      1,
 		Description: "test",
+		Smiley:			 1,
 		Hours:       7.5,
 	})
 	if err != nil {
