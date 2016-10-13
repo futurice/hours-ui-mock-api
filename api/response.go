@@ -56,7 +56,7 @@ type Entry struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
-	Smiley      int     `json:"smiley"`
+	Smiley      int     `json:"smiley,omitempty"`
 	Hours       float64 `json:"hours"`
 	Closed      bool    `json:"closed,omitempty"`
 }
