@@ -9,16 +9,16 @@ func TestRoundToHalf(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		testCase{1.0, 1.0},
-		testCase{1.2, 1.0},
-		testCase{1.3, 1.5},
-		testCase{1.6, 1.5},
-		testCase{1.85, 2.0},
-		testCase{-1.0, -1.0},
-		testCase{-1.2, -1.0},
-		testCase{-1.3, -1.5},
-		testCase{-1.6, -1.5},
-		testCase{-1.85, -2.0},
+		{1.0, 1.0},
+		{1.2, 1.0},
+		{1.3, 1.5},
+		{1.6, 1.5},
+		{1.85, 2.0},
+		{-1.0, -1.0},
+		{-1.2, -1.0},
+		{-1.3, -1.5},
+		{-1.6, -1.5},
+		{-1.85, -2.0},
 	}
 
 	for _, test := range testCases {
