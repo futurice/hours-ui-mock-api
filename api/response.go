@@ -56,6 +56,7 @@ type Entry struct {
 	ProjectID   int     `json:"projectID"`
 	TaskID      int     `json:"taskID"`
 	Description string  `json:"description"`
+	// Smiley should allow 0 as a value, golang just reads it as empty and omits it as well
 	Smiley      int     `json:"smiley,omitempty"`
 	Hours       float64 `json:"hours"`
 	Closed      bool    `json:"closed,omitempty"`
