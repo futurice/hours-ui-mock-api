@@ -52,9 +52,9 @@ type DayUpdate struct {
 
 // Entries are closed when they are invoiced and one cannot edit them afterwards
 type Entry struct {
-	ID          int     `json:"id"`
-	ProjectID   int     `json:"projectID"`
-	TaskID      int     `json:"taskID"`
+	Id          int     `json:"id"`
+	ProjectId   int     `json:"projectId"`
+	TaskId      int     `json:"taskId"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
 	Closed      bool    `json:"closed,omitempty"`
@@ -63,7 +63,7 @@ type Entry struct {
 // Every project that is assigned to the user, sorted based on most recent usage.
 // UI hides projects that are closed and were the latest entry was made over two months ago
 type Project struct {
-	ID     int    `json:"id"`
+	Id     int    `json:"id"`
 	Name   string `json:"name"`
 	Tasks  []Task `json:"tasks"`
 	Closed bool   `json:"closed,omitempty"`
@@ -72,7 +72,7 @@ type Project struct {
 // Every task that is assigned to the user, sorted based on most recent usage.
 // UI hides tasks that are closed and were the latest entry was made over two months ago
 type Task struct {
-	ID             int         `json:"id"`
+	Id             int         `json:"id"`
 	Name           string      `json:"name"`
 	Absence        bool        `json:"absence,omitempty"`
 	Closed         bool        `json:"closed,omitempty"`
@@ -82,9 +82,9 @@ type Task struct {
 
 type LatestEntry struct {
 	Date        string  `json:"date"`
-	ID          int     `json:"id"`
-	ProjectID   int     `json:"projectID"`
-	TaskID      int     `json:"taskID"`
+	Id          int     `json:"id"`
+	ProjectId   int     `json:"projectId"`
+	TaskId      int     `json:"taskId"`
 	Description string  `json:"description"`
 	Hours       float64 `json:"hours"`
 	Closed      bool    `json:"closed,omitempty"`
@@ -101,7 +101,7 @@ func fillProjects() []Project {
 			_task := task
 			_task.LatestEntry.Date = time.Now().Format(DATE_FORMAT)
 			_task.LatestEntry.Hours = RoundToHalf(RandomFloat64(0.5, 7.5))
-			if _project.ID != internalProject.ID && _project.ID != absenceProject.ID {
+			if _project.Id != internalProject.Id && _project.Id != absenceProject.Id {
 				_task.HoursRemaining = RoundToHalf(RandomFloat64(-10, 20))
 			}
 			_project.Tasks[j] = _task
@@ -172,8 +172,8 @@ func MockUserResponse() UserResponse {
 }
 
 type EntryUpdateRequest struct {
-	ProjectID   int     `json:"projectID"`
-	TaskID      int     `json:"taskID"`
+	ProjectId   int     `json:"projectId"`
+	TaskId      int     `json:"taskId"`
 	Description string  `json:"description"`
 	Date        string  `json:"date"`
 	Hours       float64 `json:"hours"`
@@ -205,9 +205,9 @@ func MockEntryPOSTResponse(request EntryUpdateRequest) (EntryUpdateResponse, err
 	months[date.Format(MONTH_FORMAT)].Days[date.Format(DATE_FORMAT)] = DayUpdate{
 		Hours: request.Hours,
 		Entry: &Entry{
-			ID:          int(RandomFloat64(0, 100)),
-			ProjectID:   request.ProjectID,
-			TaskID:      request.TaskID,
+			Id:          int(RandomFloat64(0, 100)),
+			ProjectId:   request.ProjectId,
+			TaskId:      request.TaskId,
 			Description: request.Description,
 			Hours:       request.Hours,
 			Closed:      request.Closed,
@@ -238,7 +238,7 @@ func MockEntryPUTResponse(id string, request EntryUpdateRequest) (EntryUpdateRes
 	if err != nil {
 		return EntryUpdateResponse{}, nil
 	}
-	ID := int(parse)
+	Id := int(parse)
 	response, err := MockEntryPOSTResponse(request)
 	if err != nil {
 		return EntryUpdateResponse{}, nil
@@ -246,7 +246,7 @@ func MockEntryPUTResponse(id string, request EntryUpdateRequest) (EntryUpdateRes
 
 	for _, month := range response.Hours.Months {
 		for _, day := range month.Days {
-			day.Entry.ID = ID
+			day.Entry.Id = Id
 		}
 	}
 	return response, nil
@@ -255,8 +255,8 @@ func MockEntryPUTResponse(id string, request EntryUpdateRequest) (EntryUpdateRes
 func MockEntryDELETEResponse() (EntryUpdateResponse, error) {
 	response, err := MockEntryPOSTResponse(EntryUpdateRequest{
 		Date:        time.Now().Format(DATE_FORMAT),
-		ProjectID:   1,
-		TaskID:      1,
+		ProjectId:   1,
+		TaskId:      1,
 		Description: "test",
 		Hours:       7.5,
 	})
